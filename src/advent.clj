@@ -2,9 +2,23 @@
   (:require [clojure.test :refer [with-test is run-tests]]
             [clojure.string :as s]))
 
+;; TODO default to system day of month
 (def ^:dynamic *today* 1)
 
 ;; NOTES
+
+(comment
+  "I think the key is that the defday functions are *just* thin callers of other functions.
+  They delegate all other work to helpers. Should look like:"
+  (defn- other-helper [])
+  (defn- solve-puzzle [board is-valid?])
+  ;; TODO how to handle tests
+  (defday 1
+    "12531245111111111111114534514513451345134513451345134513" ;; input
+    (fn parse-board [input])  ;; or a reference, parse-board, or anon #(->> % s/split-lines)
+    (fn single-slope [board] (solve-puzzle board #(= 1 %)))
+    (fn multi-trees [board] (solve-puzzle board #(#{1 2} %)))))
+
 ;; Goal is just to stop having to repeatedly name things
 ;; How can I better re-use the boring string parsing bits?
 ;; defday should have a pre-parser form?
