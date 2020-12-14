@@ -60,6 +60,8 @@
        x'])))
 
 ;; B (Chinese Remainder Theorem)
+;; TODO: recreate cool solution I saw on slack
+;; that involves just reducing the constraints
 (let [[_ times] input
       ts (->> times
               (map-indexed #(vector %2 %1))
