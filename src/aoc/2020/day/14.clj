@@ -66,7 +66,7 @@
              (regs reg more)))))
 
 (defn set-mem' [{:keys [or-mask float-bits mem] :as state}
-                {:keys [reg val] :as statement}]
+                {:keys [reg val]}]
   (let [regs (regs reg or-mask float-bits)
         mem' (into mem (map #(vector % val)
                             regs))]
