@@ -2,6 +2,9 @@
   (:require [hashp.core]
             [clojure.string :as s]))
 
+(set! *warn-on-reflection* true)
+(set! *unchecked-math* :warn-on-boxed)
+
 (defn parse [input]
   (->> (s/split input #",")
        (map #(Integer/parseInt %))))
@@ -10,6 +13,7 @@
 
 (def t (parse "0,3,6"))
 
+;; LEAKING TRANSIENT
 (defn init-game-state [ns]
   (let [butlast-ns (butlast ns)
         last-n (last ns)
@@ -19,19 +23,19 @@
                             (map vec)
                             (into {}))
         turn (count ns)]
-    {:last-mentioned last-mentioned
+    {:last-mentioned (transient last-mentioned)
      :last last-n
      :turn turn}))
 
 (defn turn [game-state]
   (let [{:keys [last-mentioned last turn]} game-state
         to-say (if-let [last-turn (last-mentioned last)]
-                 (dec (- turn last-turn))
+                 (dec (- ^long turn ^long last-turn))
                  0)
-        last-mentioned' (assoc last-mentioned last (dec turn))]
+        last-mentioned' (assoc! last-mentioned last (dec ^long turn))]
     {:last-mentioned last-mentioned'
      :last to-say
-     :turn (inc turn)}))
+     :turn (inc ^long turn)}))
 
 (defn solution [i]
   (->> input
@@ -41,6 +45,6 @@
        (first)
        :last))
 
-(solution 2020)
-(time (solution 30000000))
+(prn (time (solution 2020)))
+(prn (time (solution 30000000)))
 ;; "Elapsed time: 99515.620188 msecs"
