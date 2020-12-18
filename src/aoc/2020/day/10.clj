@@ -1,4 +1,4 @@
-(ns aoc.2020.10
+(ns aoc.2020.day.10
   (:require [clojure.string :as s]))
 
 (defn parse [input]
