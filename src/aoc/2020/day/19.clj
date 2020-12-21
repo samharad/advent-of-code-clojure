@@ -2,7 +2,8 @@
   (:require [clojure.string :as s]
             [clojure.math.combinatorics :as combo]
             [hashp.core]
-            [debux.core :as d]))
+            [debux.core :as d]
+            [instaparse.core :as insta]))
 
 (defn parse-rule [rule]
  (let [[i r] (s/split rule #":")
@@ -22,8 +23,6 @@
                    (s/split-lines)
                    (map parse-rule)
                    (sort-by first))
-                   ;(map second)
-                   ;(vec))
         m (apply max (map first rules))
         rules (into {} rules)
         rules (vec (for [i (range (inc m))]
@@ -114,3 +113,18 @@
           r11 (partial recursive-matches r42 r31)
           r0 (partial satisfies-cat-rules r8 r11)]
       (count (filter r0 messages)))))
+
+;; Using Instaparse :) per Clojurians
+(let [[rules messages] (s/split input #"\n\n")
+      messages (s/split-lines messages)
+      parser (insta/parser rules)]
+  (prn "A:" (->> (map #(insta/parses parser % :start :0) messages)
+                 (keep first)
+                 (count)))
+  (let [rules' (-> rules
+                   (s/replace #"\n8:.*\n" "\n8: 42 | 42 8\n")
+                   (s/replace #"\n11:.*\n" "\n11: 42 31 | 42 11 31\n"))
+        parser' (insta/parser rules')]
+    (prn "B:" (->> (map #(insta/parses parser' % :start :0) messages)
+                   (keep first)
+                   (count)))))
