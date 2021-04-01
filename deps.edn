@@ -1,4 +1,4 @@
-{:deps {philoskim/debux {:mvn/version "0.7.8"}
-        hashp/hashp {:mvn/version "0.2.0"}
+{:deps {philoskim/debux {:mvn/version "0.7.9"}
+        hashp/hashp {:mvn/version "0.2.1"}
         org.clojure/math.combinatorics {:mvn/version "0.1.6"}
         instaparse/instaparse {:mvn/version "1.4.10"}}}
