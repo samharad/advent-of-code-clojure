@@ -9,8 +9,9 @@
                      \< [-1 0]})))
 
 (defn houses [dirs]
-  (->> dirs
-       (reductions #(doall (map + %1 %2)) [0 0])))
+  (reductions #(doall (map + %1 %2))
+              [0 0]
+              dirs))
 
 (def s1 (->> (houses dirs)
              (set)
