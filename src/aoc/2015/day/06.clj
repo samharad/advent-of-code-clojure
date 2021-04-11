@@ -29,22 +29,12 @@
     [pre overlap post]))
 
 (defn row-on [row range']
-  (let [merge-ranges (fn [& ranges]
-                      (apply (partial map (fn [f & xs]
-                                            (apply f xs)))
-                             [min max]
-                             ranges))]
-            ;[(min a1 b1) (max a2 b2)])]
-    ;(let [[a b c] (split row range')]
-    ;  (concat a [(apply merge-ranges range' b)] c))))
-    (loop [pre []
-           [start end :as range'] range'
-           [[a b :as head] & more :as post] row]
-      (cond
-        (empty? post) (conj pre range')
-        (< end a) (-> pre (conj range') (into post))
-        (< b start) (recur (conj pre head) range' more)
-        :else (recur pre (merge-ranges range' head) more)))))
+  (let [union (fn [& ranges]
+                (apply (partial map (fn [f & xs] (apply f xs)))
+                       [min max]
+                       ranges))]
+    (let [[a b c] (split row range')]
+      (concat a [(apply union range' b)] c))))
 
 (defn valid-range? [[a b]] (<= a b))
 
@@ -95,4 +85,58 @@
                  (+ acc (inc (- b a))))
                0)))
 
-(prn (count-lights final-state))
+(prn "a:"(count-lights final-state))
+
+(defn split-at-boundaries [row [start end]]
+  (let [split-start (fn [[a b data]]
+                      (if (and (> start a)
+                               (<= start b))
+                        [[a (dec start) data]
+                         [start b data]]
+                        [[a b data]]))
+        split-end (fn [[a b data]]
+                    (if (and (>= end a)
+                             (< end b))
+                      [[a end data]
+                       [(inc end) b data]]
+                      [[a b data]]))]
+    (->> row
+         (mapcat split-start)
+         (mapcat split-end))))
+
+(split-at-boundaries [[0 20 :a] [21 29 :b] [30 40 :c]]
+                     [15 22])
+
+(split-at-boundaries [[0 999 :b]]
+                     [0 0])
+
+(defn part-2-row [row [start end :as range'] f]
+  (->> (split-at-boundaries row range')
+       (map (fn [[a b data]]
+              (if (and (<= start a)
+                       (>= end b))
+                [a b (f data)]
+                (do
+                  (assert (or (< end a)
+                              (> start b)))
+                  [a b data]))))))
+
+(defn part-2 [per-row-instructions]
+  (let [init (vec (repeat 1000 [[0 999 0]]))
+        res (reduce (fn [acc [action y range']]
+                      (let [row (get acc y)
+                            f ({:on inc
+                                :off (fn [x]
+                                       (max (dec x) 0))
+                                :toggle (partial + 2)} action)
+                            row (part-2-row row range' f)]
+                        (assoc acc y row)))
+                    init
+                    per-row-instructions)]
+    (->> res
+         (mapcat identity)
+         (map (fn [[a b data]] (* data
+                                  (inc (- b a)))))
+         (reduce +))))
+
+(prn "b:" (part-2 per-row-instructions))
