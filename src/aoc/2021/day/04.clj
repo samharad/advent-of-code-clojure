@@ -220,12 +220,13 @@
 ;; Lastly, before I do my testing, I'll ask Orchestra to runtime-check my
 ;; function specs:
 (st/instrument)
+;(st/unstrument)
 
 (part-1)
 
 (rcf/tests
-  (part-1) := 35670
-  (part-2) := 22704)
+  (time (part-1)) := 35670  ; without instrumentation: 2.254792 msecs
+  (time (part-2)) := 22704) ; without instrumentation: 6.697875 msecs
 
 ;; Was it worthwhile to spec out every high level function? It was barely any additional code,
 ;; and it definitely turned up some bugs, in the same way hand-written unit tests might.
