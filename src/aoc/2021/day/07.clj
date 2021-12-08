@@ -5,6 +5,8 @@
 ;; which I'm not entirely sure will work for all inputs -- I don't understand
 ;; if/why it's mathematically sound).
 
+;; Found an entertaining and informative paper on reddit: https://www.reddit.com/r/adventofcode/comments/rawxad/2021_day_7_part_2_i_wrote_a_paper_on_todays/?utm_source=share&utm_medium=web2x&context=3
+
 (ns aoc.2021.day.07
   (:require [clojure.string :as str]
             [hyperfiddle.rcf :as rcf]))
