@@ -13,4 +13,6 @@
                                                  :git/sha "c399b1b621b19dc576ea46cd4b254477e1ca9756"}
                                 criterium/criterium {:mvn/version "0.4.6"}
                                 orchestra/orchestra {:mvn/version "2021.01.01-1"}
-                                net.danielcompton/defn-spec-alpha {:mvn/version "0.1.0"}}}}}
+                                net.danielcompton/defn-spec-alpha {:mvn/version "0.1.0"}
+                                org.clojure/core.logic {:mvn/version "1.0.0"}
+                                org.clojure/math.combinatorics {:mvn/version "0.1.6"}}}}}
