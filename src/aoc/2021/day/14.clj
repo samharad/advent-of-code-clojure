@@ -136,6 +136,6 @@ CN -> C")
   (part-1 instructions) := 3143
 
   (part-2 t-instructions) := 2188189693529
-  (part-2 instructions) := 4110215602456)
+  (time (part-2 instructions)) := 4110215602456)
 
 ;; ⭐️⭐️
