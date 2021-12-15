@@ -153,7 +153,7 @@
 (rcf/tests
   (tile-grid t-grid) := t-grid-tiled
   (part-2 t-grid) := 315
-  (part-2 grid) := 3063)
+  (time (part-2 grid)) := 3063)  ; => 1756.521708 ms
 
 ;; Don't feel great about that one, but at least I won't soon forget the existence
 ;; of Dijkstra's algo.
