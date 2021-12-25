@@ -1,6 +1,7 @@
 (ns aoc.2021.cuboid
   (:require [hyperfiddle.rcf :as rcf]
-            [clojure.math.combinatorics :as combo]))
+            [clojure.math.combinatorics :as combo]
+            [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
 
 (rcf/enable!)
 
@@ -15,7 +16,7 @@
   (segments-disjoint? [0 2] [2 3]) := false
   (segments-disjoint? [2 3] [0 2]) := false)
 
-(defn cuboids-disjoint? [a b]
+(defnp cuboids-disjoint? [a b]
   (boolean
     (some (partial apply segments-disjoint?)
           (map vector a b))))
@@ -59,7 +60,7 @@
   (and (<= ax1 bx1)
        (>= ax2 bx2)))
 
-(defn cuboid-contains? [a b]
+(defnp cuboid-contains? [a b]
   (every? (partial apply seg-contains?)
           (map vector a b)))
 
@@ -76,7 +77,7 @@
      (- (inc y2) y1)
      (- (inc z2) z1)))
 
-(defn sub-cuboids [a b]
+(defnp sub-cuboids [a b]
   ;{:post [(>= (+ (volume a) (volume b))
   ;            (reduce + (map volume %)))]}
   (if (cuboids-disjoint? a b)
@@ -89,7 +90,7 @@
           boxes (->> (combo/cartesian-product xs ys zs)
                      (filter #(or (cuboid-contains? a %)
                                   (cuboid-contains? b %))))]
-      (->> boxes))))
+      boxes)))
 
 (rcf/tests
   (set (sub-cuboids [[0 2] [0 2] [0 2]]
@@ -109,7 +110,7 @@
   "Done"
   ,)
 
-(defn slow-union [[c & cuboids :as all-cuboids]]
+(defnp slow-union [[c & cuboids :as all-cuboids]]
   ;{:post [(do
   ;          (prn
   ;               (->> (combo/combinations % 2)
@@ -144,7 +145,7 @@
                                    (into more-cuboids novel-cuboids)))
           :fully-disjoint (do (recur (conj acc c) more-cuboids)))))))
 
-(defn fast-union [[c & cuboids :as all-cuboids]]
+(defnp fast-union [[c & cuboids :as all-cuboids]]
   ;{:post [(do
   ;          (prn
   ;               (->> (combo/combinations % 2)
@@ -170,15 +171,20 @@
                                  (let [sub-cuboids (sub-cuboids e c)]
                                    (when (not= (set sub-cuboids) (set [e c]))
                                      [e sub-cuboids])))
-                               ;(filter #(and (cuboid-contains? c %)
-                               ;              (not (cuboid-contains? e %))))))))
                                acc))]
         (cond
-          (some #(cuboid-contains? % c) acc) (do (recur acc more-cuboids))
-          @contained-by-c (do (recur (disj acc @contained-by-c) cuboids))
-          (first @novel) (do (recur (disj acc (first @novel))
-                                    (into more-cuboids (second @novel))))
-          :fully-disjoint (do (recur (conj acc c) more-cuboids)))))))
+          (p :contains (some #(cuboid-contains? % c) acc))
+          (do (recur acc more-cuboids))
+
+          (p :contained-by-c @contained-by-c)
+          (do (recur (disj acc @contained-by-c) cuboids))
+
+          (p :novel (first @novel))
+          (do (recur (disj acc (first @novel))
+                     (into more-cuboids (second @novel))))
+
+          (p :disjoint :fully-disjoint)
+          (do (recur (conj acc c) more-cuboids)))))))
 
 (rcf/tests
   (count (slow-union [[[0 1] [0 1] [0 1]]
