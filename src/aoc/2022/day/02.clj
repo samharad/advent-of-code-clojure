@@ -11,6 +11,8 @@
 
 (defrecord RoundChoice [their-shape my-shape])
 
+(defrecord Guide [guide-entries guide-entry->round-choice])
+
 ;;;
 
 (defn line->guide-entry [line]
@@ -22,7 +24,7 @@
        str/split-lines
        (map line->guide-entry)))
 
-(def guide (parse-guide-entries input))
+(def guide-entries (parse-guide-entries input))
 
 (def shapes [::rock ::paper ::scissors])
 (def shape-indices (set/map-invert shapes))
@@ -55,8 +57,8 @@
         shape-score (->> round-choice :my-shape shape-scores)]
     (+ outcome-score shape-score)))
 
-(defn game-score [guide guide-entry->round-choice]
-  (let [round-choices (map guide-entry->round-choice guide)
+(defn game-score [{:keys [guide-entries guide-entry->round-choice]}]
+  (let [round-choices (map guide-entry->round-choice guide-entries)
         round-scores (map round-score round-choices)]
     (apply + round-scores)))
 
@@ -66,7 +68,7 @@
   (->RoundChoice (left->their-shape left-char)
                  (right->my-shape right-char)))
 
-(game-score guide guide-entry->round-choice)
+(game-score (->Guide guide-entries guide-entry->round-choice))
 
 ;;;
 
@@ -90,4 +92,4 @@
     (->RoundChoice their-shape
                    (my-shape their-shape (right->my-outcome right-char)))))
 
-(game-score guide guide-entry->round-choice')
+(game-score (->Guide guide-entries guide-entry->round-choice'))
